@@ -1,27 +1,29 @@
 package com.example.DAO.repository;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import lombok.AllArgsConstructor;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
+@AllArgsConstructor
 @org.springframework.stereotype.Repository
 public class Repository {
-    private String script = read("script_get_product_name.sql");
-    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    private final String script = read("script_get_product_name.sql");
+    @PersistenceContext
+    private EntityManager entityManager;
 
-    public  Repository(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
-        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
-    }
-
-    public List<String>getProductName(String name) {
-        return namedParameterJdbcTemplate.queryForList(script, Map.of("name", name), String.class);
+    public List<String> getProductName(String name) {
+        return entityManager
+                .createQuery(script)
+                .setParameter("name", name)
+                .getResultList();
     }
 
     private static String read(String scriptFileName) {

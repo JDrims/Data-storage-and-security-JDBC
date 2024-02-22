@@ -1,20 +1,18 @@
 package com.example.DAO.controller;
 
-import com.example.DAO.service.Service;
+import com.example.DAO.repository.Repository;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@AllArgsConstructor
 @RestController
 public class Controller {
-    Service service;
-
-    public Controller(Service service) {
-        this.service = service;
-    }
+    private Repository repository;
 
     @GetMapping("/products/fetch-product")
     public List<String> getProductName(@RequestParam(value = "name", required = false) String name) {
-        return service.getProductName(name);
+        return repository.getProductName(name);
     }
 }
